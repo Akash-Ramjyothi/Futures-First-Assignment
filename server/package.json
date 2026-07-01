@@ -1,23 +1,31 @@
 {
-  "name": "server",
+  "name": "charting-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Real-time charting backend with WebSocket support",
+  "main": "dist/index.js",
   "scripts": {
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "charting",
+    "websocket",
+    "real-time"
+  ],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "@types/express": "^5.0.6",
-    "@types/node": "^26.0.1",
-    "@types/ws": "^8.18.1",
-    "express": "^5.2.1",
-    "nodemon": "^3.1.14",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.2",
+    "@types/ws": "^8.5.13",
+    "cors": "^2.8.6",
+    "express": "^4.19.2",
+    "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.3",
-    "ws": "^8.21.0"
+    "typescript": "^5.6.3",
+    "ws": "^8.18.0"
   }
 }

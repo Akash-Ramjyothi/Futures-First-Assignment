@@ -1,6 +1,6 @@
 // Aggregator: Derives higher timeframes from 1-minute data
 
-import { Candle } from './generator.js';
+import { Candle } from './generator';
 
 export type Interval = '1m' | '5m' | '15m' | '1h' | '1d';
 
