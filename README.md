@@ -3,9 +3,10 @@
 PulseGrid layers a real-time trading workspace on top of the upstream **KLineChart** library. We simulate 1-minute OHLCV ticks, derive higher intervals, and render multi-layout candlestick grids with persistence, load testing, and operational docs.
 
 ## Demo of Project:
+https://github.com/user-attachments/assets/a2a2854d-8271-4542-8c93-21342fb5b8b7
 
-
-
+## Problem Statement:
+[Assignment_Real_Time_Charting.pdf](https://github.com/user-attachments/files/29576773/Assignment_Real_Time_Charting.pdf)
 
 ## Table of Contents
 1. [Architecture Overview](#architecture-overview)
