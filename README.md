@@ -1,6 +1,6 @@
-<h1 align="center">PulseGrid – Real-Time Charting Workspace</h1>
+<h1 align="center">Futures First – Real-Time Charting Assignment</h1>
 
-PulseGrid layers a real-time trading workspace on top of the upstream **KLineChart** library. We simulate 1-minute OHLCV ticks, derive higher intervals, and render multi-layout candlestick grids with persistence, load testing, and operational docs.
+This repo contains my submission for the **Futures First Assignment**: a full-stack real-time charting workspace built atop **KLineChart**. It simulates 1-minute OHLCV ticks, derives higher intervals, renders multi-layout candlestick dashboards, and documents architecture, load testing, and deployment.
 
 ## Demo of Project:
 https://github.com/user-attachments/assets/a2a2854d-8271-4542-8c93-21342fb5b8b7
