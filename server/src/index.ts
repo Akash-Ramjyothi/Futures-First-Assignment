@@ -5,7 +5,7 @@ import cors from 'cors';
 import http from 'http';
 import { createWSServer, broadcastCandle } from './wsServer';
 import { generateCandle, generateHistory, getAvailableSymbols } from './generator';
-import { aggregateToInterval, Interval, updateAggregatedCandle } from './aggregator';
+import { aggregateToInterval, Interval, updateAggregatedCandle, getCachedAggregated, setCachedAggregated } from './aggregator';
 
 
 const HTTP_PORT = Number(process.env.HTTP_PORT) || 4000;
@@ -72,6 +72,9 @@ function startGeneratorLoop() {
 
                 currentAggregated.get(symbol)!.set(interval, updated);
 
+                // Cache the aggregated candle
+                setCachedAggregated(symbol, interval, updated);
+
                 // If the bucket just closed (i.e., new candle for interval), broadcast and store it
                 const intervalMs = getIntervalDurationMs(interval);
                 if ((timestamp - updated.timestamp) >= intervalMs - 1000) {
@@ -102,7 +105,9 @@ function createHttpServer() {
     app.get('/history', (req, res) => {
         const symbol = String(req.query.symbol || '').toUpperCase();
         const interval = req.query.interval as Interval;
-        const limit = Math.min(Number(req.query.limit) || 200, 500);
+        const limit = Math.min(Number(req.query.limit) || 200, 5000);
+        const from = req.query.from ? Number(req.query.from) : undefined;
+        const to = req.query.to ? Number(req.query.to) : undefined;
 
         if (!SYMBOLS.includes(symbol)) {
             return res.status(400).json({ error: `Unknown symbol: ${symbol}` });
@@ -111,9 +116,32 @@ function createHttpServer() {
             return res.status(400).json({ error: `Unsupported interval: ${interval}` });
         }
 
-        const stored = aggregatedState.get(symbol)!.get(interval) ?? [];
-        const sliced = stored.slice(-limit);
-        res.json({ symbol, interval, data: sliced });
+        let data: any[];
+
+        // If time range is specified, generate historical data on-demand
+        if (from !== undefined || to !== undefined) {
+            const endTime = to ?? Date.now();
+            const startTime = from ?? (endTime - (24 * 60 * 60 * 1000));
+            const durationMs = endTime - startTime;
+            const oneMinuteCount = Math.floor(durationMs / (60 * 1000));
+            
+            const oneMinuteHistory = generateHistory(symbol, Math.min(oneMinuteCount, 100000), endTime);
+            
+            if (interval === '1m') {
+                data = oneMinuteHistory;
+            } else {
+                data = aggregateToInterval(oneMinuteHistory, interval);
+            }
+            
+            data.sort((a, b) => b.timestamp - a.timestamp);
+            data = data.slice(0, limit);
+        } else {
+            const stored = aggregatedState.get(symbol)!.get(interval) ?? [];
+            const sliced = stored.slice(-limit);
+            data = sliced;
+        }
+
+        res.json({ symbol, interval, data });
     });
 
     server.listen(HTTP_PORT, () => {

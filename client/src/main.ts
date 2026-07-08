@@ -46,6 +46,13 @@ function createShell () {
           </div>
         </div>
         <div class="control-panel__group">
+          <label>Date Range (days)</label>
+          <div class="date-range-controls">
+            <input type="number" id="date-range-days" value="1" min="1" max="1000" step="1" />
+            <button id="apply-date-range">Apply</button>
+          </div>
+        </div>
+        <div class="control-panel__group">
           <label>Workspace</label>
           <div class="workspace-actions">
             <button data-action="save">Save workspace</button>
@@ -201,6 +208,23 @@ function attachLayoutHandlers () {
       renderGrid()
     })
   })
+
+  // Date range handler
+  const dateRangeInput = root.querySelector<HTMLInputElement>('#date-range-days')
+  const applyDateRangeBtn = root.querySelector<HTMLButtonElement>('#apply-date-range')
+  if (dateRangeInput && applyDateRangeBtn) {
+    applyDateRangeBtn.addEventListener('click', () => {
+      const days = Number(dateRangeInput.value)
+      if (days < 1 || days > 1000) {
+        alert('Please enter a value between 1 and 1000')
+        return
+      }
+      // Reload all charts with the new date range
+      tiles.forEach(tile => {
+        tile.setDateRange(days)
+      })
+    })
+  }
 
   root.querySelectorAll<HTMLButtonElement>('.workspace-actions button').forEach(button => {
     button.addEventListener('click', () => {

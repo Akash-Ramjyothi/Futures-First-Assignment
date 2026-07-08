@@ -4,6 +4,9 @@ import { Candle } from './generator';
 
 export type Interval = '1m' | '5m' | '15m' | '1h' | '1d';
 
+// In-memory cache for aggregated candles
+const aggregationCache = new Map<string, Map<number, Candle>>();
+
 // Interval configurations (multiplier for 1-minute)
 const INTERVAL_CONFIGS: Record<Interval, { minutes: number; label: string }> = {
     '1m': { minutes: 1, label: '1 minute' },
@@ -98,6 +101,35 @@ export function updateAggregatedCandle(
         close: newOneMinute.close, // Close becomes latest candle
         volume: currentAggregated.volume + newOneMinute.volume, // Sum volume
     };
+}
+
+// Cache management functions
+export function getCachedAggregated(symbol: string, interval: Interval, timestamp: number): Candle | null {
+    const key = `${symbol}:${interval}`;
+    const symbolCache = aggregationCache.get(key);
+    return symbolCache?.get(timestamp) ?? null;
+}
+
+export function setCachedAggregated(symbol: string, interval: Interval, candle: Candle): void {
+    const key = `${symbol}:${interval}`;
+    if (!aggregationCache.has(key)) {
+        aggregationCache.set(key, new Map());
+    }
+    aggregationCache.get(key)!.set(candle.timestamp, candle);
+}
+
+export function clearAggregationCache(symbol?: string, interval?: Interval): void {
+    if (symbol && interval) {
+        aggregationCache.delete(`${symbol}:${interval}`);
+    } else if (symbol) {
+        for (const key of aggregationCache.keys()) {
+            if (key.startsWith(`${symbol}:`)) {
+                aggregationCache.delete(key);
+            }
+        }
+    } else {
+        aggregationCache.clear();
+    }
 }
 
 // Get all supported intervals
