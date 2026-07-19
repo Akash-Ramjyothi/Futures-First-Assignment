@@ -34,6 +34,7 @@ export class ChartTile {
   private chart: KLineChart | null = null
   private symbol: string
   private interval: IntervalId
+  private dateRangeDays = 1
   private readonly wsHandlers = new Map<string, (payload: any) => void>()
 
   constructor (private readonly deps: ChartDependencies, initialSymbol: string, initialInterval: IntervalId) {
@@ -75,8 +76,22 @@ export class ChartTile {
     this.chart?.resetData()
   }
 
+  setDateRange (days: number) {
+    this.dateRangeDays = days
+    this.chart?.resetData()
+  }
+
   private async fetchHistory (symbol: string, interval: IntervalId): Promise<KLineData[]> {
-    const params = new URLSearchParams({ symbol, interval, limit: '300' })
+    const params = new URLSearchParams({ symbol, interval, limit: '2000' })
+    
+    // Add date range if more than 1 day
+    if (this.dateRangeDays > 1) {
+      const to = Date.now()
+      const from = to - (this.dateRangeDays * 24 * 60 * 60 * 1000)
+      params.append('from', from.toString())
+      params.append('to', to.toString())
+    }
+    
     console.log('[chartTile] request', `${HTTP_BASE}/history?${params.toString()}`)
     const response = await fetch(`${HTTP_BASE}/history?${params.toString()}`)
     if (!response.ok) {

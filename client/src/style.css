@@ -130,14 +130,16 @@ body {
 
 
 .layout-toggle,
-.workspace-actions {
+.workspace-actions,
+.date-range-controls {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
 }
 
 .layout-btn,
-.workspace-actions button {
+.workspace-actions button,
+#apply-date-range {
   border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: 999px;
   padding: 8px 18px;
@@ -148,8 +150,20 @@ body {
   transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
 }
 
+#date-range-days {
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 999px;
+  padding: 8px 18px;
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 500;
+  width: 120px;
+  text-align: center;
+}
+
 .layout-btn:hover,
-.workspace-actions button:hover {
+.workspace-actions button:hover,
+#apply-date-range:hover {
   border-color: #1f8fba;
   background: rgba(31, 143, 186, 0.15);
   transform: translateY(-1px);
